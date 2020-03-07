@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ include "terminalman.fullname" . }}
+  labels:
+    {{- include "terminalman.labels" . | nindent 4 }}
+spec:
+  type: {{ .Values.service.type }}
+  ports:
+    - port: {{ .Values.service.port }}
+      targetPort: 7681
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "terminalman.selectorLabels" . | nindent 4 }}
