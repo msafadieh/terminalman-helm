@@ -4,6 +4,20 @@ metadata:
   name: {{ include "terminalman.fullname" . }}
   labels:
     {{- include "terminalman.labels" . | nindent 4 }}
+  annotations:
+    authproxy.stakater.com/enabled: "true"
+    authproxy.stakater.com/source-service-name: {{ .Release.Name }}-terminalman
+    authproxy.stakater.com/upstream-url: "http://localhost:7681/"
+    authproxy.stakater.com/client-id: {{ .Values.oidc.client_id }}
+    authproxy.stakater.com/client-secret: {{ .Values.oidc.client_secret }}
+    authproxy.stakater.com/listen: ":80"
+    authproxy.stakater.com/discovery-url: {{ tpl .Values.oidc.discovery_url . }}
+    authproxy.stakater.com/oauth-uri: "/terminalman/oauth"
+    # authproxy.stakater.com/verbose: "true"
+    authproxy.stakater.com/gatekeeper-image: keycloak/keycloak-gatekeeper:7.0.0
+{{- with .Values.annotations }}
+{{ toYaml . | indent 4 }}
+{{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -13,6 +27,10 @@ spec:
     metadata:
       labels:
         {{- include "terminalman.selectorLabels" . | nindent 8 }}
+      annotations:
+        {{- with .Values.podAnnotations -}}
+        {{ toYaml . | nindent 8 }}
+        {{- end }}
     spec:
     {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
@@ -23,9 +41,10 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
+          command: ['ttyd', '--base-path', '{{ index (index .Values.ingress.hosts 0).paths 0 }}', 'bash']
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
-          image: "{{ .Values.image.repository }}:{{ .Chart.AppVersion }}"
+          image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
             - name: http
@@ -33,12 +52,12 @@ spec:
               protocol: TCP
           livenessProbe:
             httpGet:
-              path: /
-              port: 7681
+              path: {{ index (index .Values.ingress.hosts 0).paths 0 }}/
+              port: 80
           readinessProbe:
             httpGet:
-              path: /
-              port: 7681
+              path: {{ index (index .Values.ingress.hosts 0).paths 0 }}/
+              port: 80
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.nodeSelector }}

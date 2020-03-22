@@ -5,8 +5,9 @@
 replicaCount: 1
 
 image:
-  repository: tsl0922/ttyd
-  pullPolicy: IfNotPresent
+  repository: cloudve/ttyd
+  tag: latest
+  pullPolicy: Always
 
 imagePullSecrets: []
 nameOverride: ""
@@ -37,14 +38,13 @@ service:
   port: 80
 
 ingress:
-  enabled: false
-  annotations: {}
-    # kubernetes.io/tls-acme: "true"
+  enabled: true
   hosts:
     - host: ~
       paths:
-        - /terminal
+        - /terminalman
   tls: []
+
   #  - secretName: chart-example-tls
   #    hosts:
   #      - chart-example.local
@@ -66,3 +66,12 @@ nodeSelector: {}
 tolerations: []
 
 affinity: {}
+
+annotations: {}
+
+podAnnotations: {}
+
+oidc:
+  client_id: "terminalman"
+  client_secret: "some_secret"
+  discovery_url: "http://cloudman-keycloak-http.cloudman.svc.cluster.local/auth/realms/master"
