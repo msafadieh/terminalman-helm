@@ -64,7 +64,6 @@ spec:
           volumeMounts:
             - name: terminalman-data
               mountPath: {{ .Values.persistence.mountPath }}
-              subPath: terminalman
             {{- if .Values.extraVolumeMounts }}
             {{- .Values.extraVolumeMounts | toYaml | nindent 12 }}
             {{- end }}
