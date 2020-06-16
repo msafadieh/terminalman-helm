@@ -42,7 +42,7 @@ spec:
       containers:
         - name: {{ .Chart.Name }}
           command: ['ttyd', '--base-path', '{{ index (index .Values.ingress.hosts 0).paths 0 }}', 'bash']
-          workingDir: {{ .Values.persistence.mountPath }}
+          workingDir: {{ .Values.initialWorkingDir }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
