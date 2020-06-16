@@ -86,6 +86,8 @@ persistence:
   size: 10Gi
   mountPath: /home/terminalman
 
+initialWorkingDir: "/gvl"
+
 # extraVolumes:
 #   - name: shared-data
 #     persistentVolumeClaim:
