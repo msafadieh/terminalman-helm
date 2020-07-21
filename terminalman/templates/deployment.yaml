@@ -41,7 +41,12 @@ spec:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}
       containers:
         - name: {{ .Chart.Name }}
-          command: ['ttyd', '--base-path', '{{ index (index .Values.ingress.hosts 0).paths 0 }}', 'bash']
+          command: [
+            'sh', '-c',
+            '{{- if .Values.extraInitCommands -}}
+             {{- tpl .Values.extraInitCommands $ | nindent 13 }};
+             {{- end -}}
+             ttyd --base-path {{ index (index .Values.ingress.hosts 0).paths 0 }} bash']
           workingDir: {{ .Values.initialWorkingDir }}
           securityContext:
             {{- toYaml .Values.securityContext | nindent 12 }}

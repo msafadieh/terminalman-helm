@@ -96,3 +96,6 @@ initialWorkingDir: "/gvl"
 #   - name: shared-data
 #     mountPath: /opt/project/shared-data
 
+extraInitCommands: |
+#  cp -anrL /etc/skel/. /gvl/projects/current/
+#  /galaxy/server/extra/mapped/script.sh
